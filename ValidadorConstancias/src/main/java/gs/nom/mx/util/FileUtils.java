@@ -9,10 +9,13 @@ package gs.nom.mx.util;
  *
  * @author acruzb
  */
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,7 +43,27 @@ public final class FileUtils {
                 return byteToBase64(bytes);
             }
         }   catch (URISyntaxException | IOException ex) {
-            LOGGER.info(String.format("No se ha podido descargar el recuerso %s por favor verificar problemas de conexión.", uriSource));
+            LOGGER.info(String.format("No se ha podido descargar el recurso %s por favor verificar problemas de conexión.", uriSource));
+        } 
+        return null;
+    }
+    
+    public static String readFileFromURIContent(String uriSource) {
+        try {
+            LOGGER.info("Obteniendo el archivo");
+            String allLine = null;
+            URI uri = new URI(uriSource);
+            URL url = uri.toURL(); // get URL from your URI object
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openConnection(Proxy.NO_PROXY).getInputStream()))) {
+                String inputLine;
+               allLine = "";
+                while ((inputLine = in.readLine()) != null) {
+                    allLine += inputLine;
+                }
+            }
+            return allLine;
+        }   catch (URISyntaxException | IOException ex) {
+            LOGGER.info(String.format("No se ha podido descargar el recurso %s por favor verificar problemas de conexión.", uriSource));
         } 
         return null;
     }

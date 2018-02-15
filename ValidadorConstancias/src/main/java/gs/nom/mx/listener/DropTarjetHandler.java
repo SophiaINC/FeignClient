@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-import javax.swing.JTextArea;
+import javax.swing.JOptionPane;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 public class DropTarjetHandler implements DropTargetListener {
 
     private static final Logger LOGGER = Logger.getLogger(DropTarjetHandler.class);
-    private Principal principal;
+    private final Principal principal;
 
     public DropTarjetHandler(Principal principal) {
         this.principal = principal;
@@ -55,10 +55,9 @@ public class DropTarjetHandler implements DropTargetListener {
         if (dtde.isDataFlavorSupported(DataFlavor.imageFlavor.javaFileListFlavor)) {
             dtde.acceptDrop(dtde.getDropAction());
             try {
-
                 List transferData = (List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
                 if (transferData != null && !transferData.isEmpty() && transferData.size() == 1) {
-                    LOGGER.info("Se copia el archivo usando modo drag and drop");
+                    LOGGER.info("Se procesa el archivo usando modo drag and drop");
                     LOGGER.info(transferData);
 
                     String fileName = transferData.get(0).toString();
@@ -68,18 +67,20 @@ public class DropTarjetHandler implements DropTargetListener {
                         fileInputStreamReader = new FileInputStream(file);
                         byte[] bytes = new byte[(int) file.length()];
                         fileInputStreamReader.read(bytes);
-//                        principal.setFileBase64(new String(Base64.encodeBase64(bytes)));
+                        principal.establecerBase64(new String(Base64.encodeBase64(bytes)));
+                        principal.obetenerTipoArchivo(fileName);
+                        principal.setIconEstatus(true);
                     } catch (IOException ex) {
                         LOGGER.info("Ocurrio un error al abtener el base 64 del archivo: " + fileName, ex);
                     }
                     dtde.dropComplete(true);
                 } else if (transferData.size() > 1) {
-//                    Principal.mostrarMensajeVista("Solo se permite arrastrar un archivo.");
+                    principal.setIconEstatus(false);
+                    principal.mostrarMensajeVista("Solo se permite arrastrar un archivo.", "Atención", JOptionPane.WARNING_MESSAGE);
                     dtde.dropComplete(true);
                 }
-
             } catch (Exception ex) {
-                ex.printStackTrace();
+                principal.setIconEstatus(false);
             }
         } else {
             dtde.rejectDrop();

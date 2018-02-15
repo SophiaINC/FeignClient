@@ -23,9 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GeneratorNOM151Imp {
+public class ValidadorNOMImp {
 
-    private static final Logger LOGGER = Logger.getLogger(GeneratorNOM151Imp.class);
+    private static final Logger LOGGER = Logger.getLogger(ValidadorNOMImp.class);
 
     @Value("${ws.produccion.url}")
     public String wsURLService;
@@ -45,7 +45,7 @@ public class GeneratorNOM151Imp {
 
     private final ObjectFactory factory;
 
-    public GeneratorNOM151Imp() {
+    public ValidadorNOMImp() {
         factory = new ObjectFactory();
         soapUtils = new SOAPUtils();
         try {
@@ -86,19 +86,17 @@ public class GeneratorNOM151Imp {
                     is = connection.getInputStream();
                     DOMSource ds = soapUtils.createDOMSourceFromInputStream(is);
                     NOM2002Response response = (NOM2002Response) unMarshaller.unmarshal(ds);
-                    LOGGER.info("Se ha generado la NOM151 correctamente para el archivo: " + name);
-                    nom151 = response.getNOM2002Result().getValue();
                     LOGGER.info("Se ha validado la NOM151 --> " + response.getNOM2002Result().getValue());
                     XmlMapper xmlMapper = new XmlMapper();
                     JsonNode json = xmlMapper.readTree(response.getNOM2002Result().getValue());
                     ObjectMapper mapper = new ObjectMapper();
-                    String json2 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
-                    System.out.println(json2);
+                    nom151 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
                     break;
                 case 500:
                     is = connection.getErrorStream();
                     SOAPFault sf = soapUtils.createSOAPFaultFromInputStream(is);
-                    LOGGER.info("No se ha obtenido la NOM151 debido a: " + sf.getFaultString());
+                    nom151 = "No se ha podido validar la contancia debido a: " + sf.getFaultString();
+                    LOGGER.info("No se ha podido validar la contancia debido a: " + sf.getFaultString());
                     break;
                 default:
                     LOGGER.info("Fallo en el servicio de Karalundi codigo: " + connection.getResponseCode() + "Descripcion: " + connection.getResponseMessage());
@@ -137,8 +135,11 @@ public class GeneratorNOM151Imp {
                     is = connection.getInputStream();
                     DOMSource ds = soapUtils.createDOMSourceFromInputStream(is);
                     NOM2016Response response = (NOM2016Response) unMarshaller.unmarshal(ds);
-                    LOGGER.info("Se ha generado la NOM151 correctamente para el archivo: " + name);
-                    nom151 = response.getNOM2016Result().getValue();
+                    LOGGER.info("Se ha validado la NOM151 --> " + response.getNOM2016Result().getValue());
+                    XmlMapper xmlMapper = new XmlMapper();
+                    JsonNode json = xmlMapper.readTree(response.getNOM2016Result().getValue());
+                    ObjectMapper mapper = new ObjectMapper();
+                    nom151 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
                     break;
                 case 500:
                     is = connection.getErrorStream();

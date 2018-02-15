@@ -5,17 +5,30 @@
  */
 package gs.nom.mx.views;
 
-import ch.qos.logback.core.util.FileUtil;
+import gs.nom.mx.concurrent.ThreatChecarProceso;
+import gs.nom.mx.enums.LOADING_MODE;
 import gs.nom.mx.listener.DropTarjetHandler;
+import gs.nom.mx.listener.PrincipalEventsAdapter;
 import gs.nom.mx.util.FileUtils;
-import gs.nom.mx.ws.GeneratorNOM151Imp;
+import gs.nom.mx.ws.ValidadorNOMImp;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.dnd.DropTarget;
 import java.io.IOException;
 import java.util.TooManyListenersException;
 import java.util.logging.Level;
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.SOAPException;
@@ -27,11 +40,25 @@ import org.springframework.context.ApplicationContext;
  * @author acruzb
  */
 public class Principal extends javax.swing.JFrame {
-    
+
     private static final Logger LOGGER = Logger.getLogger(Principal.class);
-    
+
     public static String VERSION;
     public static ApplicationContext applicationContext;
+
+    public static DialogLoading dialogLoading;
+
+    //Estilo
+    private static StyledDocument contenidoDoc;
+    private final static String MIDDLELINE = "                                                                                                                           ";
+    private final static String STARTLINE = "                                                           INICIO                                                          ";
+    private final static String ENDLINE = "                                                            FIN                                                            ";
+    private final static String FONT_FAMILY = "Monospaced";
+    public static SimpleAttributeSet keyWordStyleAzul;
+    public static SimpleAttributeSet keyWordStyle;
+
+    public String archivoBase64 = "";
+    public String archivoTipo = "pdf";
 
     /**
      * Creates new form Principal
@@ -41,20 +68,39 @@ public class Principal extends javax.swing.JFrame {
         init();
         //Se centra la ventana
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("images/checkOK.png")).getImage());
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         this.setTitle("Validadore de constancias " + VERSION);
-        
+
+        contenidoDoc = textPaneSalida.getStyledDocument();
+        keyWordStyleAzul = new SimpleAttributeSet();
+        StyleConstants.setForeground(keyWordStyleAzul, Color.BLUE);
+        StyleConstants.setBold(keyWordStyleAzul, true);
+        StyleConstants.setFontFamily(keyWordStyleAzul, FONT_FAMILY);
+        StyleConstants.setFontSize(keyWordStyleAzul, 13);
+
+        keyWordStyle = new SimpleAttributeSet();
+        StyleConstants.setForeground(keyWordStyle, Color.BLACK);
+        StyleConstants.setBackground(keyWordStyle, new Color(241, 241, 241));
+        StyleConstants.setBold(keyWordStyle, true);
+        StyleConstants.setFontFamily(keyWordStyle, FONT_FAMILY);
+        StyleConstants.setFontSize(keyWordStyle, 13);
     }
-    
-    private void init(){
+
+    private void init() {
         DropTarget dt = new DropTarget();
         try {//Se agrega el listener
             dt.addDropTargetListener(new DropTarjetHandler(this));
             textFieldURLArchivo.setDropTarget(dt);
         } catch (TooManyListenersException ex) {
         }
+
+        dialogLoading = new DialogLoading(this);
+        dialogLoading.setLocationRelativeTo(this);
+        dialogLoading.getRootPane().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        this.addComponentListener(new PrincipalEventsAdapter(this, dialogLoading));
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -66,7 +112,7 @@ public class Principal extends javax.swing.JFrame {
 
         panelPrincipal = new javax.swing.JPanel();
         panelBusqueda = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnValidar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         textFieldIdentificador = new javax.swing.JTextField();
@@ -74,29 +120,26 @@ public class Principal extends javax.swing.JFrame {
         btnLimpiar = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         textFieldConstancia = new javax.swing.JTextField();
+        labelStatus = new javax.swing.JLabel();
         panelResultado = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        textPaneSalida = new javax.swing.JTextPane();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         panelBusqueda.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jButton1.setText("Validar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnValidar.setText("Validar");
+        btnValidar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnValidarActionPerformed(evt);
             }
         });
 
         jLabel2.setText("URL/Archivo");
 
         jLabel3.setText("Identificador");
-
-        textFieldIdentificador.setText("f24e3102-1ec2-4807-a513-11eeea9f3358");
-
-        textFieldURLArchivo.setText("http://10.63.100.185/img1/BazDigital/Pdfs/2018/01/03/163502003597/1/29/16-20180103162353.pdf");
 
         btnLimpiar.setText("Limpiar campos");
         btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
@@ -107,7 +150,13 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel4.setText("Constancia");
 
-        textFieldConstancia.setText("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");
+        textFieldConstancia.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                textFieldConstanciaKeyReleased(evt);
+            }
+        });
+
+        labelStatus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout panelBusquedaLayout = new javax.swing.GroupLayout(panelBusqueda);
         panelBusqueda.setLayout(panelBusquedaLayout);
@@ -117,52 +166,55 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelBusquedaLayout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(btnValidar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnLimpiar))
                     .addGroup(panelBusquedaLayout.createSequentialGroup()
-                        .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(panelBusquedaLayout.createSequentialGroup()
                                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel3)
-                                    .addComponent(jLabel2))
+                                    .addComponent(jLabel4))
                                 .addGap(51, 51, 51))
                             .addGroup(panelBusquedaLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
+                                .addComponent(jLabel2)
+                                .addGap(18, 18, 18)
+                                .addComponent(labelStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(textFieldURLArchivo, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
                             .addGroup(panelBusquedaLayout.createSequentialGroup()
                                 .addComponent(textFieldIdentificador, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(textFieldConstancia, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))))
+                            .addComponent(textFieldConstancia))))
                 .addContainerGap())
         );
         panelBusquedaLayout.setVerticalGroup(
             panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelBusquedaLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(10, 10, 10)
                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(textFieldIdentificador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(10, 10, 10)
                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textFieldConstancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(10, 10, 10)
                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textFieldURLArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addGap(15, 15, 15)
+                    .addComponent(jLabel2)
+                    .addComponent(labelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(btnValidar)
                     .addComponent(btnLimpiar))
-                .addContainerGap())
+                .addGap(10, 10, 10))
         );
 
         panelResultado.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Respuesta del servicio", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP));
 
-        jScrollPane2.setViewportView(jTextPane1);
+        jScrollPane2.setViewportView(textPaneSalida);
 
         javax.swing.GroupLayout panelResultadoLayout = new javax.swing.GroupLayout(panelResultado);
         panelResultado.setLayout(panelResultadoLayout);
@@ -172,7 +224,7 @@ public class Principal extends javax.swing.JFrame {
         );
         panelResultadoLayout.setVerticalGroup(
             panelResultadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
         );
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
@@ -192,9 +244,9 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(panelPrincipalLayout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelBusqueda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(panelResultado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelResultado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -221,54 +273,124 @@ public class Principal extends javax.swing.JFrame {
         limpiarCampos();
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String id = textFieldIdentificador.getText();
-        String url = textFieldURLArchivo.getText();
-        String constancia = textFieldConstancia.getText();
-        if(id.isEmpty()){
+    private void btnValidarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnValidarActionPerformed
+        textPaneSalida.setText("");
+        final String id = textFieldIdentificador.getText().trim();
+        final String url = textFieldURLArchivo.getText().trim();
+        final String constancia = textFieldConstancia.getText().trim();
+        if (id.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Favor de ingresar el identificador", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             textFieldIdentificador.requestFocus();
             return;
         }
-        if(constancia.isEmpty()){
-                JOptionPane.showMessageDialog(this, "Favor de ingresar la constancia a validar", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
-                textFieldConstancia.requestFocus();
-                return;
-        }
-        if(url.isEmpty()){
-                JOptionPane.showMessageDialog(this, "Favor de ingresar la url o arrastre un archivo", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
-                textFieldURLArchivo.requestFocus();
-                return;
-        }else{
-            String regex = "^(http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*(:[0-9]{1,5})?(\\/.*)?$";
-            if(!url.matches(regex)){
-                JOptionPane.showMessageDialog(this, "Ingrese una url correcta por favor", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
-                textFieldURLArchivo.requestFocus();
-                textFieldURLArchivo.selectAll();
-                return;
-            }
-        }
-        String b64 = FileUtils.readFileFromURI(url.trim());
-        if(null == b64){
-            JOptionPane.showMessageDialog(this, "No se pudo obtener el recurso", "Proceso no terminado", JOptionPane.ERROR_MESSAGE);
+        if (constancia.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Favor de ingresar la constancia a validar", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
+            textFieldConstancia.requestFocus();
             return;
         }
-        //Se realiza la validacion de la constancia
-        GeneratorNOM151Imp validador = getObject(GeneratorNOM151Imp.class);
-        try {
-            String result = validador.validaNOM2002(id, id+".pdf", b64, constancia);
-            LOGGER.info(result);
-        } catch (IOException | ParserConfigurationException | SOAPException | JAXBException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        if (url.isEmpty() && archivoBase64.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Favor de ingresar la url o arrastre un archivo", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
+            textFieldURLArchivo.requestFocus();
+            return;
+        } else {
+            if (!url.isEmpty()) {
+                String regex = "^(http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*(:[0-9]{1,5})?(\\/.*)?$";
+                if (!url.matches(regex)) {
+                    setIconEstatus(false);
+                    JOptionPane.showMessageDialog(this, "Ingrese una url correcta por favor", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
+                    textFieldURLArchivo.requestFocus();
+                    textFieldURLArchivo.selectAll();
+                    return;
+                } else {
+                    String b64 = FileUtils.readFileFromURI(url);
+                    if (null == b64) {
+                        setIconEstatus(false);
+                        JOptionPane.showMessageDialog(this, "No se pudo obtener el recurso", "Proceso no terminado", JOptionPane.ERROR_MESSAGE);
+                        textFieldURLArchivo.requestFocus();
+                        textFieldURLArchivo.selectAll();
+                        return;
+                    } else {
+                        establecerBase64(b64);
+                        setIconEstatus(true);
+                        obetenerTipoArchivo(url);
+                    }
+                }
+            }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+        //Se realiza la validacion de la constancia
+        showLoading(LOADING_MODE.INDETERMINATE);
+        Thread miHilo = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ValidadorNOMImp validador = getObject(ValidadorNOMImp.class);
+                try {
+                    escribirTextPane(MIDDLELINE, keyWordStyle);
+                    escribirTextPane(STARTLINE, keyWordStyle);
+                    String result = validador.validaNOM2002(id, id + "." + archivoTipo, archivoBase64, constancia);
+                    if (null != result) {
+                        escribirTextPane(result, keyWordStyleAzul);
+                    } else {
+                        escribirTextPane("Hubo un problema de conexión con el servicio de validación, favor de intentar más tarde.", keyWordStyle);
+                    }
+                    escribirTextPane(ENDLINE, keyWordStyle);
+                    escribirTextPane(MIDDLELINE, keyWordStyle);
+                    escribirTextPane("\n", null);
 
-    private void limpiarCampos(){
+                } catch (IOException | ParserConfigurationException | SOAPException | JAXBException ex) {
+                    java.util.logging.Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                archivoBase64 = "";
+                archivoTipo = "";
+                labelStatus.setIcon(null);
+            }
+        });
+        miHilo.start();
+        new ThreatChecarProceso(miHilo).start();
+    }//GEN-LAST:event_btnValidarActionPerformed
+
+    private void textFieldConstanciaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldConstanciaKeyReleased
+        if (textFieldConstancia.getText().contains("@")) {
+            String dat[] = textFieldConstancia.getText().split("@");
+            textFieldConstancia.setText(dat[0]);
+            textFieldIdentificador.setText(dat[1]);
+        } else if (textFieldConstancia.getText().trim().startsWith("http") && textFieldConstancia.getText().trim().endsWith("txt")) {
+            String constancia = FileUtils.readFileFromURIContent(textFieldConstancia.getText());
+            if (null != constancia) {
+                textFieldConstancia.setText(constancia);
+            }
+        }
+    }//GEN-LAST:event_textFieldConstanciaKeyReleased
+
+    private void limpiarCampos() {
         textFieldIdentificador.setText("");
         textFieldURLArchivo.setText("");
         textFieldConstancia.setText("");
+        textPaneSalida.setText("");
+        labelStatus.setIcon(null);
+        archivoBase64 = "";
+        archivoTipo = "";
     }
-    
+
+    public void setIconEstatus(boolean estatus) {
+        labelStatus.setIcon(new ImageIcon(new ImageIcon(getClass().getClassLoader().getResource(String.format("images/%s.jpg", (estatus) ? "ok" : "no"))).getImage()));
+    }
+
+    public void establecerBase64(String b64) {
+        this.archivoBase64 = b64;
+    }
+
+    public void obetenerTipoArchivo(String archivo) {
+        if (archivo.endsWith("pdf")) {
+            archivoTipo = "pdf";
+        } else {
+            archivoTipo = "tif";
+        }
+    }
+
+    public void mostrarMensajeVista(String texto, String title, int type) {
+        JOptionPane.showMessageDialog(this, texto, title, type);
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -298,25 +420,49 @@ public class Principal extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public static <R extends Object> R getObject(Class<? extends Object> clazz) {
         return (R) applicationContext.getBean(clazz);
     }
 
+    public static void escribirTextPane(String linea, AttributeSet style) {
+        try {
+            contenidoDoc.insertString(contenidoDoc.getLength(), linea + "\n", style);
+        } catch (BadLocationException ex) {
+            System.out.println("No se pudo escribir: " + ex.getMessage());
+        }
+    }
+
+    public static void showLoading(LOADING_MODE mode) {
+        if (mode.equals(LOADING_MODE.INDETERMINATE)) {
+            dialogLoading.setIndeterminateMode();
+        }
+        if (mode.equals(LOADING_MODE.SCALE)) {
+            dialogLoading.setScaleMode();
+        }
+        dialogLoading.setVisible(true);
+    }
+
+    public static void hideLoading() {
+        dialogLoading.dispose();
+        LOGGER.info("Se manda a ocultar el loading");
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLimpiar;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnValidar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JLabel labelStatus;
     private javax.swing.JPanel panelBusqueda;
     private javax.swing.JPanel panelPrincipal;
     private javax.swing.JPanel panelResultado;
     private javax.swing.JTextField textFieldConstancia;
     private javax.swing.JTextField textFieldIdentificador;
     private javax.swing.JTextField textFieldURLArchivo;
+    private javax.swing.JTextPane textPaneSalida;
     // End of variables declaration//GEN-END:variables
 }
