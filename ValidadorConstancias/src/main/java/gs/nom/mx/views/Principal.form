@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="3"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="panelPrincipal" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="panelPrincipal" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="panelPrincipal">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="panelResultado" alignment="0" max="32767" attributes="0"/>
+              <Component id="panelBusqueda" alignment="0" max="32767" attributes="0"/>
+              <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="jLabel1" min="-2" pref="35" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="panelBusqueda" max="32767" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Component id="panelResultado" min="-2" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="panelBusqueda">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+                <EtchetBorder/>
+              </Border>
+            </Property>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="btnLimpiar" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="textFieldURLArchivo" pref="717" max="32767" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Component id="textFieldIdentificador" min="-2" pref="350" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Component id="textFieldConstancia" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="textFieldIdentificador" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="textFieldConstancia" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="textFieldURLArchivo" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnLimpiar" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JButton" name="jButton1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Validar"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel2">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="URL/Archivo"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel3">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Identificador"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="textFieldIdentificador">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="f24e3102-1ec2-4807-a513-11eeea9f3358"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="textFieldURLArchivo">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="http://10.63.100.185/img1/BazDigital/Pdfs/2018/01/03/163502003597/1/29/16-20180103162353.pdf"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnLimpiar">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Limpiar campos"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLimpiarActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel4">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Constancia"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="textFieldConstancia">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="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"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="panelResultado">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder justification="2" position="2" title="Respuesta del servicio">
+                  <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+                    <EtchetBorder/>
+                  </Border>
+                </TitledBorder>
+              </Border>
+            </Property>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane2" alignment="1" pref="186" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+              <AuxValues>
+                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+              </AuxValues>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+              <SubComponents>
+                <Component class="javax.swing.JTextPane" name="jTextPane1">
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Component class="javax.swing.JLabel" name="jLabel1">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="20" style="1"/>
+            </Property>
+            <Property name="horizontalAlignment" type="int" value="0"/>
+            <Property name="text" type="java.lang.String" value="Validador de Constancias"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>
