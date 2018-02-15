@@ -33,7 +33,6 @@ public class ValidadorNOMImp {
     public String wsUSERService;
     @Value("${ws.produccion.pwd}")
     public String wsPWDService;
-    public static boolean isProduction = true;
 
     private final SOAPUtils soapUtils;
     private HttpURLConnection connection;
@@ -57,7 +56,7 @@ public class ValidadorNOMImp {
     }
 
     private synchronized void openNewConnection() throws MalformedURLException, IOException {
-        connection = soapUtils.createConnection(wsURLService, true, isProduction);
+        connection = soapUtils.createConnection(wsURLService, true);
     }
 
     public synchronized String validaNOM2002(String idDoc, String name, String docB64, String constancia)

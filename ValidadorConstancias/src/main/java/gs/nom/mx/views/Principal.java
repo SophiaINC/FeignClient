@@ -55,6 +55,7 @@ public class Principal extends javax.swing.JFrame {
     private final static String ENDLINE = "                                                            FIN                                                            ";
     private final static String FONT_FAMILY = "Monospaced";
     public static SimpleAttributeSet keyWordStyleAzul;
+    public static SimpleAttributeSet keyWordStyleRojo;
     public static SimpleAttributeSet keyWordStyle;
 
     public String archivoBase64 = "";
@@ -78,6 +79,12 @@ public class Principal extends javax.swing.JFrame {
         StyleConstants.setBold(keyWordStyleAzul, true);
         StyleConstants.setFontFamily(keyWordStyleAzul, FONT_FAMILY);
         StyleConstants.setFontSize(keyWordStyleAzul, 13);
+        
+        keyWordStyleRojo = new SimpleAttributeSet();
+        StyleConstants.setForeground(keyWordStyleRojo, Color.RED);
+        StyleConstants.setBold(keyWordStyleRojo, true);
+        StyleConstants.setFontFamily(keyWordStyleRojo, FONT_FAMILY);
+        StyleConstants.setFontSize(keyWordStyleRojo, 13);
 
         keyWordStyle = new SimpleAttributeSet();
         StyleConstants.setForeground(keyWordStyle, Color.BLACK);
@@ -224,7 +231,7 @@ public class Principal extends javax.swing.JFrame {
         );
         panelResultadoLayout.setVerticalGroup(
             panelResultadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
         );
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
@@ -330,7 +337,7 @@ public class Principal extends javax.swing.JFrame {
                     if (null != result) {
                         escribirTextPane(result, keyWordStyleAzul);
                     } else {
-                        escribirTextPane("Hubo un problema de conexión con el servicio de validación, favor de intentar más tarde.", keyWordStyle);
+                        escribirTextPane("Hubo un problema de conexión con el servicio de validación, favor de intentar más tarde.", keyWordStyleRojo);
                     }
                     escribirTextPane(ENDLINE, keyWordStyle);
                     escribirTextPane(MIDDLELINE, keyWordStyle);

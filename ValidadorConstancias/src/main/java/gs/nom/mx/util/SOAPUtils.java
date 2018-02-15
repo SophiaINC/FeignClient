@@ -14,8 +14,15 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -56,21 +63,17 @@ public class SOAPUtils {
      *
      * @param url
      * @param withProxy
-     * @param isSSL
      * @return
      * @throws MalformedURLException
      * @throws IOException
      */
-    public HttpURLConnection createConnection(String url, boolean withProxy, boolean isSSL)
+    public HttpURLConnection createConnection(String url, boolean withProxy)
             throws MalformedURLException, IOException {
         LOGGER.info("Se crea el objeto de conexion con el proveedor: " + url);
         URL urlAction = new URL(url);
-//        if(isSSL){
-//            disableCertificateValidation();
-//        }
+        disableCertificateValidation();
         Proxy proxy = (Proxy) ((withProxy) ? ProxyUtils.getProxyDevelopment() : Proxy.NO_PROXY);
-        HttpURLConnection connection = (isSSL) ? (HttpsURLConnection) urlAction.openConnection(proxy)
-                : (HttpURLConnection) urlAction.openConnection(proxy);
+        HttpsURLConnection connection = (HttpsURLConnection) urlAction.openConnection(proxy);
         connection.setConnectTimeout(TIME_OUT);
         connection.setReadTimeout(TIME_OUT);
         return connection;
@@ -201,21 +204,24 @@ public class SOAPUtils {
     }
 
     
-//    public static void disableCertificateValidation() {
-//        // Create a trust manager that does not validate certificate chains
-//        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager(){
-//            public X509Certificate[] getAcceptedIssuers(){return null;}
-//            public void checkClientTrusted(X509Certificate[] certs, String authType){}
-//            public void checkServerTrusted(X509Certificate[] certs, String authType){}
-//        }};
-//
-//        // Install the all-trusting trust manager
-//        try {
-//            SSLContext sc = SSLContext.getInstance("TLS");
-//            sc.init(null, trustAllCerts, new SecureRandom());
-//            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-//        } catch (Exception e) {
-//        }
-//    }
+    public static void disableCertificateValidation() {
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager(){
+            @Override
+            public X509Certificate[] getAcceptedIssuers(){return null;}
+            @Override
+            public void checkClientTrusted(X509Certificate[] certs, String authType){}
+            @Override
+            public void checkServerTrusted(X509Certificate[] certs, String authType){}
+        }};
+
+        // Install the all-trusting trust manager
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, trustAllCerts, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+        }
+    }
 
 }
