@@ -7,6 +7,9 @@ package gs.nom.mx.util;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -15,12 +18,19 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.logging.Level;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.xml.bind.JAXBContext;
@@ -49,11 +59,12 @@ public class SOAPUtils {
     private static final Logger LOGGER = Logger.getLogger(SOAPUtils.class);
     private static final String PREFIX = "soapenv";
     private static final int TIME_OUT;
-    
-    static{
+    private static final String PWD_CERT = "changeit";
+
+    static {
         TIME_OUT = 300 * 1000;
     }
-    
+
     public SOAPUtils() {
         super();
     }
@@ -71,9 +82,14 @@ public class SOAPUtils {
             throws MalformedURLException, IOException {
         LOGGER.info("Se crea el objeto de conexion con el proveedor: " + url);
         URL urlAction = new URL(url);
-        disableCertificateValidation();
+//        disableCertificateValidation();
         Proxy proxy = (Proxy) ((withProxy) ? ProxyUtils.getProxyDevelopment() : Proxy.NO_PROXY);
         HttpsURLConnection connection = (HttpsURLConnection) urlAction.openConnection(proxy);
+//        try {
+//            connection.setSSLSocketFactory(getSSLSocketFactory(PWD_CERT));
+//        } catch (IOException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException | CertificateException ex) {
+//            LOGGER.info("No se pudo establecer el certificado SSL.", ex);
+//        }
         connection.setConnectTimeout(TIME_OUT);
         connection.setReadTimeout(TIME_OUT);
         return connection;
@@ -203,16 +219,21 @@ public class SOAPUtils {
         return sm.getSOAPBody().getFault();
     }
 
-    
     public static void disableCertificateValidation() {
         // Create a trust manager that does not validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager(){
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
             @Override
-            public X509Certificate[] getAcceptedIssuers(){return null;}
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
             @Override
-            public void checkClientTrusted(X509Certificate[] certs, String authType){}
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
             @Override
-            public void checkServerTrusted(X509Certificate[] certs, String authType){}
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
         }};
 
         // Install the all-trusting trust manager
@@ -224,4 +245,20 @@ public class SOAPUtils {
         }
     }
 
+    public SSLSocketFactory getSSLSocketFactory(String pKeyPassword) throws KeyStoreException, FileNotFoundException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException, KeyManagementException {
+        LOGGER.info("Se establece el certificado SSL.");
+        File pKeyFile = new File(getClass().getClassLoader().getResource("certificados/Karalundi_2020.crt").getFile());
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        LOGGER.info("Archivo encontrado: " + pKeyFile.getAbsolutePath());
+        try (InputStream keyInput = new FileInputStream(pKeyFile)) {
+            keyStore.load(keyInput, pKeyPassword.toCharArray());
+        }
+        keyManagerFactory.init(keyStore, pKeyPassword.toCharArray());
+
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(keyManagerFactory.getKeyManagers(), null, new SecureRandom());
+        LOGGER.info("FIN OK OK OK .");
+        return context.getSocketFactory();
+    }
 }

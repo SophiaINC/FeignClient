@@ -9,6 +9,8 @@ import gs.nom.mx.views.DialogLoading;
 import gs.nom.mx.views.Principal;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  *
@@ -28,11 +30,13 @@ public class PrincipalEventsAdapter implements ComponentListener{
     @Override
     public void componentResized(ComponentEvent e) {
         loading.setLocationRelativeTo(principal);
+//        panelAprobado.setBounds(scroll.getWidth() - 200, scroll.getBounds().y + 50, 210, 210);
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
         loading.setLocationRelativeTo(principal);
+//        panelAprobado.setBounds(scroll.getWidth() - 200, scroll.getBounds().y + 50, 210, 210);
     }
 
     @Override

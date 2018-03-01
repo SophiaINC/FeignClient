@@ -11,23 +11,24 @@ import gs.nom.mx.listener.DropTarjetHandler;
 import gs.nom.mx.listener.PrincipalEventsAdapter;
 import gs.nom.mx.util.FileUtils;
 import gs.nom.mx.ws.ValidadorNOMImp;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.dnd.DropTarget;
 import java.io.IOException;
 import java.util.TooManyListenersException;
 import java.util.logging.Level;
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,6 +61,10 @@ public class Principal extends javax.swing.JFrame {
 
     public String archivoBase64 = "";
     public String archivoTipo = "pdf";
+    
+    private JPanel panelAprobado;
+    private javax.swing.JScrollPane scrollResultado;
+    private javax.swing.JTextPane textPaneSalida;
 
     /**
      * Creates new form Principal
@@ -95,13 +100,21 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void init() {
+        scrollResultado = new javax.swing.JScrollPane();
+        textPaneSalida = new javax.swing.JTextPane();
+        textPaneSalida.setEditable(false);
+        scrollResultado.setViewportView(textPaneSalida);
+        scrollResultado.setSize(layerPanePrincipal.getSize());
+        layerPanePrincipal.add(scrollResultado, 2);
+        
+        
         DropTarget dt = new DropTarget();
         try {//Se agrega el listener
             dt.addDropTargetListener(new DropTarjetHandler(this));
             textFieldURLArchivo.setDropTarget(dt);
         } catch (TooManyListenersException ex) {
         }
-
+        
         dialogLoading = new DialogLoading(this);
         dialogLoading.setLocationRelativeTo(this);
         dialogLoading.getRootPane().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -128,12 +141,12 @@ public class Principal extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         textFieldConstancia = new javax.swing.JTextField();
         labelStatus = new javax.swing.JLabel();
-        panelResultado = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        textPaneSalida = new javax.swing.JTextPane();
+        layerPanePrincipal = new javax.swing.JLayeredPane();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        panelPrincipal.setLayout(new java.awt.BorderLayout());
 
         panelBusqueda.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -148,6 +161,8 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel3.setText("Identificador");
 
+        textFieldURLArchivo.setText("http://200.38.122.86/img1/BazDigital/Pdfs/2018/01/18/9215dcfcd0274de2ba05a88893dc21b3/4/55/5-20180118173830.pdf");
+
         btnLimpiar.setText("Limpiar campos");
         btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -157,6 +172,7 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel4.setText("Constancia");
 
+        textFieldConstancia.setText("http://10.63.100.185/img11/digitalizacion_web/2018/01/18/FOTOYAUDIO/9215dcfcd0274de2ba05a88893dc21b3/9215dcfcd0274de2ba05a88893dc21b3-1-1/5/26327280001.txt");
         textFieldConstancia.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 textFieldConstanciaKeyReleased(evt);
@@ -165,6 +181,8 @@ public class Principal extends javax.swing.JFrame {
 
         labelStatus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
+        layerPanePrincipal.setLayout(new java.awt.BorderLayout());
+
         javax.swing.GroupLayout panelBusquedaLayout = new javax.swing.GroupLayout(panelBusqueda);
         panelBusqueda.setLayout(panelBusquedaLayout);
         panelBusquedaLayout.setHorizontalGroup(
@@ -172,6 +190,7 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(panelBusquedaLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(layerPanePrincipal)
                     .addGroup(panelBusquedaLayout.createSequentialGroup()
                         .addComponent(btnValidar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -189,11 +208,11 @@ public class Principal extends javax.swing.JFrame {
                                 .addComponent(labelStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(textFieldURLArchivo, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+                            .addComponent(textFieldURLArchivo, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
                             .addGroup(panelBusquedaLayout.createSequentialGroup()
                                 .addComponent(textFieldIdentificador, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(textFieldConstancia))))
+                            .addComponent(textFieldConstancia, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         panelBusquedaLayout.setVerticalGroup(
@@ -208,53 +227,26 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(textFieldConstancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addGap(10, 10, 10)
-                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textFieldURLArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(labelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelStatus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(textFieldURLArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)))
                 .addGap(10, 10, 10)
                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnValidar)
                     .addComponent(btnLimpiar))
-                .addGap(10, 10, 10))
+                .addGap(19, 19, 19)
+                .addComponent(layerPanePrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
-        panelResultado.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Respuesta del servicio", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP));
-
-        jScrollPane2.setViewportView(textPaneSalida);
-
-        javax.swing.GroupLayout panelResultadoLayout = new javax.swing.GroupLayout(panelResultado);
-        panelResultado.setLayout(panelResultadoLayout);
-        panelResultadoLayout.setHorizontalGroup(
-            panelResultadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2)
-        );
-        panelResultadoLayout.setVerticalGroup(
-            panelResultadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
-        );
+        panelPrincipal.add(panelBusqueda, java.awt.BorderLayout.CENTER);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Validador de Constancias");
-
-        javax.swing.GroupLayout panelPrincipalLayout = new javax.swing.GroupLayout(panelPrincipal);
-        panelPrincipal.setLayout(panelPrincipalLayout);
-        panelPrincipalLayout.setHorizontalGroup(
-            panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelResultado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(panelBusqueda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        panelPrincipalLayout.setVerticalGroup(
-            panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPrincipalLayout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelResultado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        panelPrincipal.add(jLabel1, java.awt.BorderLayout.PAGE_START);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -335,8 +327,12 @@ public class Principal extends javax.swing.JFrame {
                     escribirTextPane(STARTLINE, keyWordStyle);
                     String result = validador.validaNOM2002(id, id + "." + archivoTipo, archivoBase64, constancia);
                     if (null != result) {
+                        escribirImagen((result.contains("\"Valida\"")));
+                        escribirTextPane("\n", null);
                         escribirTextPane(result, keyWordStyleAzul);
                     } else {
+                        escribirImagen(false);
+                        escribirTextPane("\n", null);
                         escribirTextPane("Hubo un problema de conexión con el servicio de validación, favor de intentar más tarde.", keyWordStyleRojo);
                     }
                     escribirTextPane(ENDLINE, keyWordStyle);
@@ -439,6 +435,21 @@ public class Principal extends javax.swing.JFrame {
             System.out.println("No se pudo escribir: " + ex.getMessage());
         }
     }
+    
+    public void escribirImagen(boolean exito){
+        Style def = StyleContext.getDefaultStyleContext().
+                getStyle(StyleContext.DEFAULT_STYLE);
+        Style regular = contenidoDoc.addStyle("regular", def);
+        Style s = contenidoDoc.addStyle("icon", regular);
+        StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
+        ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(String.format("images/%s.png", (exito) ? "aprobado" : "rechazado")), "hey");
+        StyleConstants.setIcon(s, icon);
+        try {
+            contenidoDoc.insertString(contenidoDoc.getLength(), " ", contenidoDoc.getStyle("icon"));
+        } catch (BadLocationException ex) {
+            java.util.logging.Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public static void showLoading(LOADING_MODE mode) {
         if (mode.equals(LOADING_MODE.INDETERMINATE)) {
@@ -462,14 +473,12 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel labelStatus;
+    private javax.swing.JLayeredPane layerPanePrincipal;
     private javax.swing.JPanel panelBusqueda;
     private javax.swing.JPanel panelPrincipal;
-    private javax.swing.JPanel panelResultado;
     private javax.swing.JTextField textFieldConstancia;
     private javax.swing.JTextField textFieldIdentificador;
     private javax.swing.JTextField textFieldURLArchivo;
-    private javax.swing.JTextPane textPaneSalida;
     // End of variables declaration//GEN-END:variables
 }
