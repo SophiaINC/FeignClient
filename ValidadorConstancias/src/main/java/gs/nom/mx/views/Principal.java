@@ -11,7 +11,6 @@ import gs.nom.mx.listener.DropTarjetHandler;
 import gs.nom.mx.listener.PrincipalEventsAdapter;
 import gs.nom.mx.util.FileUtils;
 import gs.nom.mx.ws.ValidadorNOMImp;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -143,6 +142,9 @@ public class Principal extends javax.swing.JFrame {
         labelStatus = new javax.swing.JLabel();
         layerPanePrincipal = new javax.swing.JLayeredPane();
         jLabel1 = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        checkBoxMenuProxy = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -237,7 +239,7 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(btnValidar)
                     .addComponent(btnLimpiar))
                 .addGap(19, 19, 19)
-                .addComponent(layerPanePrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+                .addComponent(layerPanePrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -247,6 +249,21 @@ public class Principal extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Validador de Constancias");
         panelPrincipal.add(jLabel1, java.awt.BorderLayout.PAGE_START);
+
+        jMenu1.setText("Configuraciones");
+
+        checkBoxMenuProxy.setSelected(true);
+        checkBoxMenuProxy.setText("Proxy");
+        checkBoxMenuProxy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkBoxMenuProxyActionPerformed(evt);
+            }
+        });
+        jMenu1.add(checkBoxMenuProxy);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -340,7 +357,13 @@ public class Principal extends javax.swing.JFrame {
                     escribirTextPane("\n", null);
 
                 } catch (IOException | ParserConfigurationException | SOAPException | JAXBException ex) {
-                    java.util.logging.Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.info("No se pudo realizar la validacion.", ex);
+                    escribirTextPane("\n", null);
+                    escribirTextPane("\n", null);
+                    escribirTextPane("Hubo un problema de conexión con el servicio de validación, favor de intentar más tarde.", keyWordStyleRojo);
+                    escribirTextPane("\n", null);
+                    escribirTextPane("\n", null);
+                    escribirTextPane(ENDLINE, keyWordStyle);
                 }
                 archivoBase64 = "";
                 archivoTipo = "";
@@ -363,6 +386,10 @@ public class Principal extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_textFieldConstanciaKeyReleased
+
+    private void checkBoxMenuProxyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxMenuProxyActionPerformed
+        checkBoxMenuProxy.getState();
+    }//GEN-LAST:event_checkBoxMenuProxyActionPerformed
 
     private void limpiarCampos() {
         textFieldIdentificador.setText("");
@@ -392,6 +419,11 @@ public class Principal extends javax.swing.JFrame {
 
     public void mostrarMensajeVista(String texto, String title, int type) {
         JOptionPane.showMessageDialog(this, texto, title, type);
+    }
+    
+    public static boolean useProxy(){
+        LOGGER.info("proxy: " + checkBoxMenuProxy.getState());
+        return checkBoxMenuProxy.getState();
     }
 
     /**
@@ -469,10 +501,13 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnValidar;
+    private static javax.swing.JCheckBoxMenuItem checkBoxMenuProxy;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JLabel labelStatus;
     private javax.swing.JLayeredPane layerPanePrincipal;
     private javax.swing.JPanel panelBusqueda;

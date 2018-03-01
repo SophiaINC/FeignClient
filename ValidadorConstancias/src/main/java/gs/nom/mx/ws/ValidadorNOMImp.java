@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import gs.nom.mx.util.SOAPUtils;
+import gs.nom.mx.views.Principal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import javax.net.ssl.HttpsURLConnection;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -35,7 +36,7 @@ public class ValidadorNOMImp {
     public String wsPWDService;
 
     private final SOAPUtils soapUtils;
-    private HttpURLConnection connection;
+    private HttpsURLConnection connection;
     private Marshaller marshaller;
     private Unmarshaller unMarshaller;
 
@@ -56,7 +57,7 @@ public class ValidadorNOMImp {
     }
 
     private synchronized void openNewConnection() throws MalformedURLException, IOException {
-        connection = soapUtils.createConnection(wsURLService, true);
+        connection = soapUtils.createConnection(wsURLService, Principal.useProxy());
     }
 
     public synchronized String validaNOM2002(String idDoc, String name, String docB64, String constancia)
