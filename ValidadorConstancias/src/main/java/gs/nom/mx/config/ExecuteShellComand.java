@@ -5,31 +5,19 @@
  */
 package gs.nom.mx.config;
 
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import static gs.nom.mx.config.CertConfig.fileCertName;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +47,8 @@ public class ExecuteShellComand {
             disco = matcher.group(1) + ":";
         }
         //C: && cd C:\Program Files\Java\jdk1.7.0_79\jre\lib\security\ && ..\..\bin\keytool -list -v -keystore cacerts -alias karalundi2002 -storepass changeit
+        //ELIMINAR CERT keytool -delete -alias karalundi2020 -keystore cacerts -storepass changeit
+        //LISTAR CERT keytool -list -v -alias karalundi2020 -keystore cacerts -storepass changeit
         String[] cmd = new String[3];
         if (osName.contains("Windows")) {
             cmd[0] = "cmd";
@@ -91,7 +81,7 @@ public class ExecuteShellComand {
             cmd[1] = "/C";
             cmd[2] = String.format("%s && cd %s && %skeytool -import -keystore cacerts -file %s -alias %s -storepass changeit -noprompt", disco, javaCacertDir, Paths.get(javaCacertDir).relativize(Paths.get(javaKeytoolDir)).toString().concat(File.separator), pathCert, fileCertName);
         }
-        LOGGER.info("Comando aplicado para la instalacion:" + cmd[2]);
+        LOGGER.info("Comando aplicado para la instalacion: " + cmd[2]);
         executeCommand(cmd);
         LOGGER.info("Se valida la instalacion del certificado.");
         if(excecuteIsCertificateIstalled()){//Se verifica el estaus de la instalacion
