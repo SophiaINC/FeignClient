@@ -62,7 +62,6 @@ public class SOAPUtils {
     private static final Logger LOGGER = Logger.getLogger(SOAPUtils.class);
     private static final String PREFIX = "soapenv";
     private static final int TIME_OUT;
-    private static final String PWD_CERT = "";
 
     static {
         TIME_OUT = 300 * 1000;
@@ -87,6 +86,10 @@ public class SOAPUtils {
         URL urlAction = new URL(url);
         if(!CertConfig.certificateInstalled){
             disableCertificateValidation();
+            LOGGER.info("Se deshabilita el certificado SSL.");
+        }
+        else{
+            LOGGER.info("Conexion segura mediante el certificado SSL.");
         }
         Proxy proxy = (Proxy) ((withProxy) ? ProxyUtils.getProxyDevelopment() : Proxy.NO_PROXY);
         HttpsURLConnection connection = (HttpsURLConnection) urlAction.openConnection(proxy);
@@ -260,7 +263,6 @@ public class SOAPUtils {
                 String fechaExp = new SimpleDateFormat("dd-MM-yyyy").format(notAfter);
                 LOGGER.info(String.format("El certificado expira el %s.", fechaExp));
                 LOGGER.info("Certificado en b64: " + Base64.encode(ca.getEncoded()));
-//                LOGGER.info("Se agrega el certificado para: " + ca);
             }
             // Create a KeyStore containing our trusted CAs
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());

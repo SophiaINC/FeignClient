@@ -173,26 +173,6 @@
                 <groupId>org.jvnet.jax-ws-commons</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
                 <version>2.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <wsdlFiles>
-                                <wsdlFile>validanomts.doc2sign.com/wsValida.svc.wsdl</wsdlFile>
-                            </wsdlFiles>
-                            <packageName>gs.nom.mx.ws</packageName>
-                            <vmArgs>
-                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-                            </vmArgs>
-                            <wsdlLocation>https://validanomts.doc2sign.com/wsValida.svc?wsdl</wsdlLocation>
-                            <staleFile>${project.build.directory}/jaxws/stale/wsValida.svc.stale</staleFile>
-                        </configuration>
-                        <id>wsimport-generate-wsValida.svc</id>
-                        <phase>generate-sources</phase>
-                    </execution>
-                </executions>
                 <dependencies>
                     <dependency>
                         <groupId>javax.xml</groupId>

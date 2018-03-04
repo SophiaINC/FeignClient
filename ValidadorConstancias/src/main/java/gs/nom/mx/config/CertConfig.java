@@ -47,8 +47,7 @@ public class CertConfig {
     private String certName;
     private Path pathFile;
 
-    public CertConfig() {
-    }
+    public CertConfig() {}
 
     @PostConstruct
     public void init() {
