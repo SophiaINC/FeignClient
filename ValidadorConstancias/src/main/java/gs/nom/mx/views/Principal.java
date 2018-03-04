@@ -61,7 +61,6 @@ public class Principal extends javax.swing.JFrame {
     public String archivoBase64 = "";
     public String archivoTipo = "pdf";
     
-    private JPanel panelAprobado;
     private javax.swing.JScrollPane scrollResultado;
     private javax.swing.JTextPane textPaneSalida;
 

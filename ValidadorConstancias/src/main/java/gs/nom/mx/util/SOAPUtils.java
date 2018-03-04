@@ -6,6 +6,7 @@
 package gs.nom.mx.util;
 
 import com.sun.org.apache.xml.internal.security.utils.Base64;
+import gs.nom.mx.config.CertConfig;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -84,12 +85,11 @@ public class SOAPUtils {
             throws MalformedURLException, IOException {
         LOGGER.info("Se crea el objeto de conexion con el proveedor: " + url);
         URL urlAction = new URL(url);
-//        disableCertificateValidation();
+        if(!CertConfig.certificateInstalled){
+            disableCertificateValidation();
+        }
         Proxy proxy = (Proxy) ((withProxy) ? ProxyUtils.getProxyDevelopment() : Proxy.NO_PROXY);
         HttpsURLConnection connection = (HttpsURLConnection) urlAction.openConnection(proxy);
-        
-        connection.setSSLSocketFactory(buildSslSocketFactory());
-        
         connection.setConnectTimeout(TIME_OUT);
         connection.setReadTimeout(TIME_OUT);
         return connection;
