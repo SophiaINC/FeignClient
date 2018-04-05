@@ -6,6 +6,7 @@
 package abel.cruz.eurekaclient;
 
 import com.netflix.discovery.EurekaClient;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class EurekaClientApplication implements GreetingController {
     
+    final static Logger LOGGER = Logger.getLogger(EurekaClientApplication.class);
+    
     @Autowired
     @Lazy
     private EurekaClient eurekaClient;
@@ -37,6 +40,7 @@ public class EurekaClientApplication implements GreetingController {
 
     @Override
     public String greeting() {
+        LOGGER.info("Hola mundo ... desde el servicio /greeting");
         return String.format("Hello from '%s'!", eurekaClient.getApplication(appName).getName());
     }
 }
